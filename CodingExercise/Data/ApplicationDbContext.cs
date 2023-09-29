@@ -1,4 +1,5 @@
-﻿using CodingExercise.Models;
+﻿using CodingExercise.Entities;
+using CodingExercise.Models;
 using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
@@ -6,12 +7,13 @@ using Microsoft.Extensions.Options;
 
 namespace CodingExercise.Data
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
+    public class ApplicationDbContext: DbContext
     {
-        public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions)
-            : base(options, operationalStoreOptions)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
+            optionsBuilder.UseInMemoryDatabase(databaseName: "PresentationDB");
         }
+
+        public DbSet<Presentation> Presentations { get; set; }
     }
 }

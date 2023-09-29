@@ -5,7 +5,7 @@ namespace CodingExercise.Controllers
 {
     public class OidcConfigurationController : Controller
     {
-        private readonly ILogger<OidcConfigurationController> _logger;
+        /*private readonly ILogger<OidcConfigurationController> _logger;
 
         public OidcConfigurationController(
             IClientRequestParametersProvider clientRequestParametersProvider,
@@ -22,6 +22,6 @@ namespace CodingExercise.Controllers
         {
             var parameters = ClientRequestParametersProvider.GetClientParameters(HttpContext, clientId);
             return Ok(parameters);
-        }
+        }*/
     }
 }

@@ -1,6 +1,14 @@
-﻿namespace CodingExercise.Services.PresentationService
+﻿using CodingExercise.Models;
+using CodingExercise.Models.Core;
+
+namespace CodingExercise.Services.PresentationService
 {
-    public class IPresentationService
+    public interface IPresentationService
     {
+        Task<Result<List<PresentationViewModel>>> GetAllPresentations();
+        Task<Result<PresentationViewModel>> GetPresentationById(int id);
+        Task<Result<string>> AddPresentation(PresentationViewModel presentation);
+        Task<Result<string>> UpdatePresentation(PresentationViewModel presentation);
+        Task<Result<string>> DeletePresentation(int id);
     }
 }
