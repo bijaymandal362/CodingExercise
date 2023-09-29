@@ -3,10 +3,9 @@ using CodingExercise.Extensions;
 using CodingExercise.Models;
 using CodingExercise.Services.AuthService;
 using CodingExercise.Services.PresentationService;
-using Microsoft.AspNetCore.Authentication;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -47,7 +46,12 @@ builder.Services.AddAuthentication(opt =>
         ValidAudience = builder.Configuration["JWT:Audience"]
     };
 });
-
+/*builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("User", policy => policy.RequireRole("User"));
+    // Add more policies for other roles as needed
+});*/
 builder.Services.AddHealthChecks();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {

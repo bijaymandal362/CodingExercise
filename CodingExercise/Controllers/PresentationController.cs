@@ -19,13 +19,14 @@ namespace CodingExercise.Controllers
 
 
         [HttpGet("GetPresentationList")]
-       
+        [AllowAnonymous]
         public async Task<IActionResult> GetPresentationList([FromQuery] PaginationFilterModel paginationFilterModel)
         {
             return HandleResult( await _iPresentationService.GetAllPresentations(paginationFilterModel));
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("GetPresentationById/{id}")]
         public async Task<IActionResult> GetPresentationById([FromRoute]int id)
         {
