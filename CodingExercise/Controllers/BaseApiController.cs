@@ -7,6 +7,7 @@ namespace CodingExercise.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BaseApiController : ControllerBase
     {
         protected ActionResult HandleResult<T>(Result<T> result)

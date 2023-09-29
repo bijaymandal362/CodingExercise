@@ -2,7 +2,7 @@
 
 namespace CodingExercise.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser 
     {
     }
 }

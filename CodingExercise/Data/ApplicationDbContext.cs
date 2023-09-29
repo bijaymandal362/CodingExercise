@@ -1,9 +1,6 @@
 ﻿using CodingExercise.Entities;
-using CodingExercise.Models;
-using Duende.IdentityServer.EntityFramework.Options;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using CodingExercise.Entities.LoginAndRegister;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace CodingExercise.Data
 {
@@ -15,5 +12,6 @@ namespace CodingExercise.Data
         }
 
         public DbSet<Presentation> Presentations { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

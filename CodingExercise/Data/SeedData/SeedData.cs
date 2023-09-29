@@ -1,4 +1,5 @@
 ﻿using CodingExercise.Entities;
+using CodingExercise.Entities.LoginAndRegister;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 
@@ -19,21 +20,21 @@ namespace CodingExercise.Data.SeedData
                         new Presentation
                         {
                             Id = 1,
-                            Title = "Sample Presentation 1",
+                            Title = "Ab Presentation 1",
                             PresenterName = "Presenter 1",
                             DurationInMinutes = 30
                         },
                         new Presentation
                         {
                             Id = 2,
-                            Title = "Sample Presentation 2",
+                            Title = "QT Presentation 2",
                             PresenterName = "Presenter 2",
                             DurationInMinutes = 45
                         },
                         new Presentation
                         {
                             Id = 3,
-                            Title = "Sample Presentation 3",
+                            Title = "AA Presentation 3",
                             PresenterName = "Presenter 3",
                             DurationInMinutes = 60
                         }

@@ -4,6 +4,8 @@ using CodingExercise.Infrastructure.Exceptions;
 using CodingExercise.Models;
 using CodingExercise.Models.Constant;
 using CodingExercise.Models.Core;
+using CodingExercise.Models.GridTableProperty;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodingExercise.Services.PresentationService
@@ -78,31 +80,65 @@ namespace CodingExercise.Services.PresentationService
             }
         }
 
-        public  async Task<Result<List<PresentationViewModel>>> GetAllPresentations()
+        public  async Task<Result<PagedResponsePresentationModel<List<PresentationViewModel>>>> GetAllPresentations(PaginationFilterModel paginationFilterModel )
         {
             try
             {
-               var getAllPresentationList = await _context.Presentations.Select(x=> new PresentationViewModel()
-               {
-                   Id = x.Id,
-                   Title= x.Title,
-                   PresenterName =x.PresenterName,
-                   DurationInMinutes = x.DurationInMinutes                      
-               }).ToListAsync();
-
-                if(getAllPresentationList.Any())
+                var getAllPresentationList =  _context.Presentations.Select(x => new 
                 {
-                    return Result<List<PresentationViewModel>>.Success(getAllPresentationList);
+                     x.Id,
+                     x.Title,
+                     x.PresenterName,
+                     x.DurationInMinutes
+                });
+
+                var x = getAllPresentationList.Count();
+
+                if (!string.IsNullOrEmpty(paginationFilterModel.SearchValue))
+                {
+
+                    getAllPresentationList =  getAllPresentationList.Where
+                      (
+                          x => x.Title.ToLower().Contains(paginationFilterModel.SearchValue.ToLower())
+                      );
+
+                }
+
+                var records = getAllPresentationList.OrderBy(x=>x.Title);
+                var totalRecords = await records.CountAsync();
+                var filteredData = await records.Select(x=> new PresentationViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    PresenterName = x.PresenterName,
+                    DurationInMinutes = x.DurationInMinutes
+                }).Skip((paginationFilterModel.PageNumber - 1) * paginationFilterModel.PageSize)
+                    .Take(paginationFilterModel.PageSize).ToListAsync();
+                    
+
+
+                if (paginationFilterModel.PageSize > totalRecords && totalRecords > 0)
+                {
+                    paginationFilterModel.PageSize = totalRecords;
+                }
+
+                var totalPages = (totalRecords / paginationFilterModel.PageSize);
+
+                var data = new PagedResponsePresentationModel<List<PresentationViewModel>>(filteredData, paginationFilterModel.PageNumber, paginationFilterModel.PageSize, totalRecords, totalPages);
+
+                if (getAllPresentationList.Any())
+                {
+                    return Result<PagedResponsePresentationModel<List<PresentationViewModel>>>.Success(data);
                 }
                 else
                 {
-                    return Result<List<PresentationViewModel>>.Success(null);
+                    return Result<PagedResponsePresentationModel<List<PresentationViewModel>>>.Success(null);
                 }
             }
             catch(Exception ex)
             {
                 _iLogger.LogError(ex, ReturnMessage.ErrorOccured);
-                return Result<List<PresentationViewModel>>.Error(ReturnMessage.ErrorOccured);
+                return Result < PagedResponsePresentationModel<List<PresentationViewModel>>>.Error(ReturnMessage.ErrorOccured);
             }
            
         }

@@ -1,7 +1,10 @@
 ﻿using CodingExercise.Models;
+using CodingExercise.Models.GridTableProperty;
 using CodingExercise.Services.PresentationService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace CodingExercise.Controllers
 {
@@ -16,9 +19,10 @@ namespace CodingExercise.Controllers
 
 
         [HttpGet("GetPresentationList")]
-        public async Task<IActionResult> GetPresentationList()
+       
+        public async Task<IActionResult> GetPresentationList([FromQuery] PaginationFilterModel paginationFilterModel)
         {
-            return HandleResult( await _iPresentationService.GetAllPresentations());
+            return HandleResult( await _iPresentationService.GetAllPresentations(paginationFilterModel));
         }
 
         [HttpGet]
