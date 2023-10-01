@@ -14,10 +14,12 @@ namespace CodingExercise.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ITokenRevocationService _tokenRevocationService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ITokenRevocationService tokenRevocationService)
         {
             _authService = authService;
+            _tokenRevocationService = tokenRevocationService;
         }
 
         // POST: auth/login
@@ -70,14 +72,13 @@ namespace CodingExercise.Controllers
 
             if (loggedInUser != null)
             {
-                return Ok(loggedInUser);
+                return Ok(new {message=$"Registration successful done, Username: {userToRegister.UserName}, Role: {userToRegister.Role}  Time: {DateTimeOffset.UtcNow} "});
             }
 
             return BadRequest(new { message = "User registration unsuccessful" });
         }
 
         // GET: auth/test
-        [Authorize(Roles = "Everyone")]
         [HttpGet]
         public IActionResult Test()
         {
@@ -102,5 +103,25 @@ namespace CodingExercise.Controllers
         }
 
      
+        [HttpPost("/Logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Check if the token is already revoked
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return BadRequest(new { message = "Token has already been revoked" });
+            }
+
+            // Revoke the token
+            _tokenRevocationService.RevokeToken(token);
+
+            // Redirect to a page or return a response as needed
+            return Ok(new { message = "Logout successful" });
+        }
+
+
     }
 }

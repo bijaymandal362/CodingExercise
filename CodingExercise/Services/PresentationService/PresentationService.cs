@@ -5,7 +5,6 @@ using CodingExercise.Models;
 using CodingExercise.Models.Constant;
 using CodingExercise.Models.Core;
 using CodingExercise.Models.GridTableProperty;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodingExercise.Services.PresentationService
