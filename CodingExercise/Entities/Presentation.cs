@@ -1,4 +1,5 @@
 ﻿
+using CodingExercise.Infrastructure.Validater;
 using System.ComponentModel.DataAnnotations;
 
 namespace CodingExercise.Entities
@@ -10,12 +11,14 @@ namespace CodingExercise.Entities
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [NoWhiteSpaces]
         [StringLength(255, MinimumLength = 2)]
+        [RegularExpression(@"\w")]
         public string Title { get; set; }
 
-        [Required]
+        [NoWhiteSpaces]
         [StringLength(50, MinimumLength = 2)]
+        [RegularExpression(@"\w")]
         public string PresenterName { get; set; }
 
         [Required]

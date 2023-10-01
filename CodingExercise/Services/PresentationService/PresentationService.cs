@@ -27,7 +27,6 @@ namespace CodingExercise.Services.PresentationService
         {
             try
             {
-                
                 Presentation addPresentation = new()
                 {
                     Id = presentation.Id,
@@ -125,14 +124,9 @@ namespace CodingExercise.Services.PresentationService
 
                 var data = new PagedResponsePresentationModel<List<PresentationViewModel>>(filteredData, paginationFilterModel.PageNumber, paginationFilterModel.PageSize, totalRecords, totalPages);
 
-                if (getAllPresentationList.Any())
-                {
-                    return Result<PagedResponsePresentationModel<List<PresentationViewModel>>>.Success(data);
-                }
-                else
-                {
-                    return Result<PagedResponsePresentationModel<List<PresentationViewModel>>>.Success(null);
-                }
+                
+                return Result<PagedResponsePresentationModel<List<PresentationViewModel>>>.Success(data);
+          
             }
             catch(Exception ex)
             {

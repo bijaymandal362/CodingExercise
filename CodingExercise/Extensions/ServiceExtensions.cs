@@ -19,7 +19,7 @@ namespace CodingExercise.Extensions
             services.AddControllers();
 
             //inmemoryDB
-            services.AddDbContext<ApplicationDbContext>();
+           
             //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddScoped<IPresentationService, PresentationService>();

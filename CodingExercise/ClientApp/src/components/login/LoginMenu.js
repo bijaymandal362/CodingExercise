@@ -6,8 +6,15 @@ import {
   TextField,
   Button,
   Typography,
+  Container,
+  Box,
+  CssBaseline,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import React, { useState } from "react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -22,15 +29,21 @@ function LoginMenu() {
 
   const [loginData, setLoginData] = useState({ userName: "", password: "" });
   const [errorMessages, setErrorMessages] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   let navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Check if the username is only whitespace
+    if (!loginData.userName.trim()) {
+      setErrorMessages("Username cannot be whitespace only.");
+      return;
+    }
+
     console.log("login", loginData, process.env.REACT_APP_API_URL);
 
     try {
-     
       const response = await axios.post(
         process.env.REACT_APP_API_URL + "/Login",
         loginData
@@ -47,59 +60,83 @@ function LoginMenu() {
   const handleChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
-
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   return (
     <React.Fragment>
-      <Grid>
-        <Paper elevation={10} style={paperStyle}>
-          <Grid align="center">
-            <Avatar style={avatarColour}>
-              <LockOpenOutlinedIcon />
-            </Avatar>
-          </Grid>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100vh", // Adjust this value as needed for the desired centering effect
+          }}
+        >
+          <Paper elevation={10} style={paperStyle}>
+            <Grid align="center">
+              <Avatar style={avatarColour}>
+                <LockOpenOutlinedIcon />
+              </Avatar>
+            </Grid>
+            <form onSubmit={handleLogin}>
+              <TextField
+                fullWidth
+                required
+                name="userName"
+                label="Username"
+                placeholder="Enter Username"
+                sx={{ mt: 2, mb: 2 }}
+                onChange={handleChange}
+              />
 
-          <form onSubmit={handleLogin}>
-            <TextField
-              fullWidth
-              required
-              name="userName"
-              id="outlined-required"
-              label="Username"
-              placeholder="Enter Username"
-              sx={{ mt: 2, mb: 2 }}
-              onChange={handleChange}
-            />
+              <TextField
+                fullWidth
+                required
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                label="Password"
+                placeholder="Enter Password"               
+                onChange={handleChange}
+                sx={{ mt: 1, mb: 1 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? (
+                          <VisibilityIcon />
+                        ) : (
+                          <VisibilityOffIcon />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-            <TextField
-              fullWidth
-              required
-              name="password"
-              id="outlined-required"
-              label="Password"
-              placeholder="Enter Password"
-              type="password"
-              onChange={handleChange}
-              sx={{ mt: 1, mb: 1 }}
-            />
+              {errorMessages && (
+                <Typography variant="body2" color="error">
+                  {errorMessages}
+                </Typography>
+              )}
 
-            {errorMessages && (
-              <Typography variant="body2" color="error">
-                {errorMessages}
-              </Typography>
-            )}
-
-            <Button
-              type="submit"
-              color="primary"
-              variant="contained"
-              fullWidth
-              sx={{ mt: 5 }}
-            >
-              Login
-            </Button>
-          </form>
-        </Paper>
-      </Grid>
+              <Button
+                type="submit"
+                color="primary"
+                variant="contained"
+                fullWidth
+                sx={{ mt: 3 }} // Adjust the spacing as needed
+              >
+                Login
+              </Button>
+            </form>
+          </Paper>
+        </Box>
+      </Container>
     </React.Fragment>
   );
 }

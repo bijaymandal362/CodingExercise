@@ -9,6 +9,8 @@ using System.Text;
 namespace CodingExercise.Services.AuthService
 {
     using BCrypt.Net;
+    using CodingExercise.Models;
+
     public class AuthService : IAuthService
     {
         private readonly ApplicationDbContext _dbContext;
@@ -19,15 +21,19 @@ namespace CodingExercise.Services.AuthService
             _configuration = configuration;
         }
 
-        public async Task<User> Login(string email, string password)
+        public async Task<UserModel?> Login(string email, string password)
         {
-            User? user = await _dbContext.Users.FindAsync(email);
+            var user = await _dbContext.Users.FindAsync(email);
+            
 
             if (user == null || BCrypt.Verify(password, user.Password) == false)
             {
                 return null; //returning null intentionally to show that login was unsuccessful
             }
 
+            var userModel = new UserModel(user.UserName, user.Name, user.Role);
+                          
+            
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JWT:SecretKey"]);
 
@@ -47,19 +53,19 @@ namespace CodingExercise.Services.AuthService
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.Token = tokenHandler.WriteToken(token);
-            user.IsActive = true;
+            userModel.Token = tokenHandler.WriteToken(token);
+            userModel.IsActive = true;
 
-            return user;
+            return userModel;
         }
 
-        public async Task<User> Register(User user)
+        public async Task<UserModel> Register(User user)
         {
             user.Password = BCrypt.HashPassword(user.Password);
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync();
-
-            return user;
+            var userModel = new UserModel(user.UserName, user.Name, user.Role);
+            return userModel;
         }
     }
 }

@@ -2,9 +2,8 @@
 {
     public static class MiddlewareExtensions
     {
-        public async static Task UseCustomMiddleware(this IApplicationBuilder app)
+        public  static void UseCustomMiddleware(this IApplicationBuilder app)
         {
-            await DataSeeder.SeedPresentationData(app);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
