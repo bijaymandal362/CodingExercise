@@ -26,7 +26,7 @@ namespace CodingExercise.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+   
         [Route("GetPresentationById/{id}")]
         public async Task<IActionResult> GetPresentationById([FromRoute]int id)
         {
@@ -34,6 +34,7 @@ namespace CodingExercise.Controllers
         }
 
         [HttpPost("AddPresentation")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddPresentation([FromBody] PresentationViewModel presentation)
         {
           return  HandleResult(await _iPresentationService.AddPresentation(presentation));
@@ -42,6 +43,7 @@ namespace CodingExercise.Controllers
 
         [HttpPut]
         [Route("UpdatePresentation")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePresentation([FromBody] PresentationViewModel presentation)
         {
             return HandleResult(await _iPresentationService.UpdatePresentation(presentation));

@@ -3,9 +3,9 @@ using CodingExercise.Data;
 
 namespace CodingExercise.Extensions
 {
-    public class DataSeeder
+    public static class DataSeeder
     {
-        public static async Task  SeedPresentationData(IApplicationBuilder app)
+        public static async Task  SeedPresentationData(this IApplicationBuilder app)
         {
             using (var scope = app.ApplicationServices.CreateScope())
             {
