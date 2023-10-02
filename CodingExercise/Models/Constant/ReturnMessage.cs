@@ -13,6 +13,9 @@
         public const string ErrorOccuredWhileUpdatingPresentation = "An error occurred while updating presentations";
         public const string ErrorOccuredWhileDeletingPresentation = "An error occurred while Deleting presentations";
         public const string ErrorOccured = "An error occurred while fetching presentations.";
+
+
+        public const string ErrorOccuredPresentationNotBeNull = "An Error occurred, Presnetation is null";
         
     }
 }

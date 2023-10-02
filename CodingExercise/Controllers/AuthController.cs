@@ -25,7 +25,7 @@ namespace CodingExercise.Controllers
         // POST: auth/login
         [AllowAnonymous]
         [HttpPost("/Login")]
-        public async Task<IActionResult> Login([FromBody] LoginUser user)
+        public async Task<IActionResult> Login([FromBody] LoginUserModel user)
         {
             if (String.IsNullOrEmpty(user.UserName))
             {
@@ -36,7 +36,7 @@ namespace CodingExercise.Controllers
                 return BadRequest(new { message = "Password needs to entered" });
             }
 
-            User loggedInUser = await _authService.Login(user.UserName, user.Password);
+            var loggedInUser = await _authService.Login(user.UserName, user.Password);
 
             if (loggedInUser != null)
             {
@@ -49,7 +49,7 @@ namespace CodingExercise.Controllers
         // POST: auth/register
         [AllowAnonymous]
         [HttpPost("/Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUser user)
+        public async Task<IActionResult> Register([FromBody] RegisterUserModel user)
         {
             if (String.IsNullOrEmpty(user.Name))
             {
@@ -66,9 +66,9 @@ namespace CodingExercise.Controllers
 
             User userToRegister = new(user.UserName, user.Name, user.Password, user.Role);
 
-            User registeredUser = await _authService.Register(userToRegister);
+            var registeredUser = await _authService.Register(userToRegister);
 
-            User loggedInUser = await _authService.Login(registeredUser.UserName, user.Password);
+            var loggedInUser = await _authService.Login(registeredUser.UserName, user.Password);
 
             if (loggedInUser != null)
             {

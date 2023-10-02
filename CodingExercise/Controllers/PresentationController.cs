@@ -33,20 +33,41 @@ namespace CodingExercise.Controllers
             return HandleResult(await _iPresentationService.GetPresentationById(id));
         }
 
-        [HttpPost("AddPresentation")]
-        [Authorize(Roles = "Admin")]
+        [HttpPost("AddPresentation")]   
         public async Task<IActionResult> AddPresentation([FromBody] PresentationViewModel presentation)
         {
-          return  HandleResult(await _iPresentationService.AddPresentation(presentation));
+            if (!ModelState.IsValid)
+            {
+                // Return validation errors as a JSON response
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { errors });
+            }
+            
+            else { return HandleResult(await _iPresentationService.AddPresentation(presentation)); }
+        
         }
 
 
         [HttpPut]
         [Route("UpdatePresentation")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePresentation([FromBody] PresentationViewModel presentation)
         {
-            return HandleResult(await _iPresentationService.UpdatePresentation(presentation));
+            if (!ModelState.IsValid)
+            {
+                // Return validation errors as a JSON response
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { errors });
+            }
+            else{ return HandleResult(await _iPresentationService.UpdatePresentation(presentation)); }
+           
         }
 
         [HttpDelete]

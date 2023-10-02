@@ -6,9 +6,9 @@ namespace CodingExercise.Data
 {
     public class ApplicationDbContext: DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            optionsBuilder.UseInMemoryDatabase(databaseName: "PresentationDB");
+
         }
 
         public DbSet<Presentation> Presentations { get; set; }

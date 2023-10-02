@@ -27,22 +27,33 @@ namespace CodingExercise.Services.PresentationService
         {
             try
             {
-                
-                Presentation addPresentation = new()
+                if(presentation == null)
                 {
-                    Id = presentation.Id,
-                    Title = presentation.Title,
-                    PresenterName = presentation.Title,
-                    DurationInMinutes = presentation.DurationInMinutes
-                };
+                    throw new PresentationNotBeNullException();
+                }
+                else
+                {
+                    Presentation addPresentation = new()
+                    {
+                        Id = presentation.Id,
+                        Title = presentation.Title,
+                        PresenterName = presentation.Title,
+                        DurationInMinutes = presentation.DurationInMinutes
+                    };
 
-                await _context.AddAsync(addPresentation);
-                await _context.SaveChangesAsync();
-                return Result<string>.Success(ReturnMessage.SavedSuccessfully);
+                    await _context.AddAsync(addPresentation);
+                    await _context.SaveChangesAsync();
+                    return Result<string>.Success(ReturnMessage.SavedSuccessfully);
+                }
+               
 
             }
             catch (Exception ex)
-            {
+            { if(ex is PresentationNotBeNullException)
+                {
+                    _iLogger.LogError(ex, ReturnMessage.ErrorOccuredPresentationNotBeNull);
+                    return Result<string>.Error(ReturnMessage.ErrorOccuredPresentationNotBeNull);
+                }
                 _iLogger.LogError(ex, ReturnMessage.ErrorOccuredWhileAddingPresentation);
                 return Result<string>.Error(ReturnMessage.ErrorOccuredWhileAddingPresentation);
 
@@ -91,7 +102,6 @@ namespace CodingExercise.Services.PresentationService
                      x.DurationInMinutes
                 });
 
-                var x = getAllPresentationList.Count();
 
                 if (!string.IsNullOrEmpty(paginationFilterModel.SearchValue))
                 {
@@ -125,14 +135,9 @@ namespace CodingExercise.Services.PresentationService
 
                 var data = new PagedResponsePresentationModel<List<PresentationViewModel>>(filteredData, paginationFilterModel.PageNumber, paginationFilterModel.PageSize, totalRecords, totalPages);
 
-                if (getAllPresentationList.Any())
-                {
-                    return Result<PagedResponsePresentationModel<List<PresentationViewModel>>>.Success(data);
-                }
-                else
-                {
-                    return Result<PagedResponsePresentationModel<List<PresentationViewModel>>>.Success(null);
-                }
+                
+                return Result<PagedResponsePresentationModel<List<PresentationViewModel>>>.Success(data);
+          
             }
             catch(Exception ex)
             {

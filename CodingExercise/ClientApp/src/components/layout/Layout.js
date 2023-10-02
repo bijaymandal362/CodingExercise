@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -13,9 +14,26 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
-const Layout = () => {
-  const [value, setValue] = useState(0);
- 
+// Define styles as constants
+const appBarStyle = {
+  background: "#063970",
+};
+
+const linkStyle = {
+  textDecoration: "none",
+  color: "inherit",
+};
+
+const buttonStyle = {
+  marginLeft: "auto",
+};
+
+const containerStyle = {
+  marginLeft: "10px",
+};
+
+function Layout() {
+  const value = "none"; // initial tab based on current pathname
   let navigate = useNavigate();
 
   const handleLoginButtonClicked = (e) => {
@@ -32,6 +50,10 @@ const Layout = () => {
 
   const handleLogout = () => {
     const token = JSON.parse(localStorage.getItem("data"))?.token;
+    if (!token) {
+      alert("You are not logged in");
+      return;
+    }
     axios
       .post(`${process.env.REACT_APP_API_URL}/Logout`, null, {
         headers: {
@@ -40,47 +62,42 @@ const Layout = () => {
       })
       .then((response) => {
         const message = response.data.message;
-        getDataFromList();
         localStorage.removeItem("data");
         console.log("Response from server:", message);
+        return navigate("/login");
       })
       .catch((error) => {
         console.error("Logout error:", error);
       });
   };
 
-  const getDataFromList = () => {
-    axios
-      .get(
-        `${process.env.REACT_APP_API_URL}/api/Presentation/GetPresentationList`
-      )
-      .then((response) => {
-        const responseData = response.data.data;
-        console.log("Response from server:", responseData);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
   return (
     <React.Fragment>
-      <AppBar sx={{ background: "#063970" }}>
+      <AppBar sx={appBarStyle}>
         <Toolbar>
-          <IconButton onClick={handleLogout}  color="inherit">
-            <ExitToAppIcon /> {/* Use ExitToApp icon for logout */}
+          <IconButton onClick={handleLogout} color="inherit">
+            <ExitToAppIcon />
           </IconButton>
+
           <Typography sx={{ margin: "5px" }}> Presentation </Typography>
-          <Tabs
-            textColor="inherit"
-            value={value}
-            onChange={(e, value) => setValue(value)}
-            indicatorColor="secondary"
-          >
-            <Tab label="Home" />
-            <Tab label="About" />
+          <Tabs textColor="inherit" value={value}>
+            <Tab
+              label={
+                <Link to="/" style={linkStyle}>
+                  Home
+                </Link>
+              }
+            />
+            <Tab
+              label={
+                <Link to="*" style={linkStyle}>
+                  About
+                </Link>
+              }
+            />
           </Tabs>
           <Button
-            sx={{ marginLeft: "auto" }}
+            sx={buttonStyle}
             onClick={handleLoginButtonClicked}
             variant="contained"
             color="primary"
@@ -88,18 +105,19 @@ const Layout = () => {
             Login{" "}
           </Button>
           <Button
-            sx={{ marginLeft: "10px" }}
+            sx={containerStyle}
             onClick={handleRegistrationButtonClicked}
             variant="contained"
             color="primary"
           >
             Register{" "}
           </Button>
+
           <Drawer />
         </Toolbar>
       </AppBar>
     </React.Fragment>
   );
-};
+}
 
 export default Layout;
