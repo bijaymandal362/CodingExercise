@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AppBar,
@@ -14,6 +14,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
+// Define styles as constants
 const appBarStyle = {
   background: "#063970",
 };
@@ -31,9 +32,8 @@ const containerStyle = {
   marginLeft: "10px",
 };
 
-const Layout = () => {
-  const value = "none"; // Set the initial tab based on the current pathname
-
+function Layout() {
+  const value = "none"; // initial tab based on current pathname
   let navigate = useNavigate();
 
   const handleLoginButtonClicked = (e) => {
@@ -76,8 +76,9 @@ const Layout = () => {
       <AppBar sx={appBarStyle}>
         <Toolbar>
           <IconButton onClick={handleLogout} color="inherit">
-            <ExitToAppIcon /> {/* Use ExitToApp icon for logout */}
+            <ExitToAppIcon />
           </IconButton>
+
           <Typography sx={{ margin: "5px" }}> Presentation </Typography>
           <Tabs textColor="inherit" value={value}>
             <Tab
@@ -111,11 +112,12 @@ const Layout = () => {
           >
             Register{" "}
           </Button>
+
           <Drawer />
         </Toolbar>
       </AppBar>
     </React.Fragment>
   );
-};
+}
 
 export default Layout;

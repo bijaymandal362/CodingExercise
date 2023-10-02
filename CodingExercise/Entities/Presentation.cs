@@ -11,12 +11,12 @@ namespace CodingExercise.Entities
         [Key]
         public int Id { get; set; }
 
-        [NoWhiteSpaces]
+        [NoWhiteSpacesAttribute]
         [StringLength(255, MinimumLength = 2)]
         [RegularExpression(@"\w")]
         public string Title { get; set; }
 
-        [NoWhiteSpaces]
+        [NoWhiteSpacesAttribute]
         [StringLength(50, MinimumLength = 2)]
         [RegularExpression(@"\w")]
         public string PresenterName { get; set; }

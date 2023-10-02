@@ -19,30 +19,35 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function LoginMenu() {
+  let navigate = useNavigate();
+
   const paperStyle = {
     padding: "20px",
     width: 280,
     margin: "20px auto",
     height: "50vh",
   };
-  const avatarColour = { backgroundColor: "#1bbd7e" };
 
+  const avatarColour = { backgroundColor: "#1bbd7e" };
   const [loginData, setLoginData] = useState({ userName: "", password: "" });
   const [errorMessages, setErrorMessages] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  let navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  };
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    console.log("login", loginData, process.env.REACT_APP_API_URL);
     // Check if the username is only whitespace
     if (!loginData.userName.trim()) {
       setErrorMessages("Username cannot be whitespace only.");
       return;
     }
-
-    console.log("login", loginData, process.env.REACT_APP_API_URL);
-
     try {
       const response = await axios.post(
         process.env.REACT_APP_API_URL + "/Login",
@@ -57,12 +62,6 @@ function LoginMenu() {
     }
   };
 
-  const handleChange = (e) => {
-    setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  };
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
   return (
     <React.Fragment>
       <Container component="main" maxWidth="xs">
@@ -73,7 +72,7 @@ function LoginMenu() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            height: "100vh", // Adjust this value as needed for the desired centering effect
+            height: "100vh",
           }}
         >
           <Paper elevation={10} style={paperStyle}>
@@ -100,7 +99,7 @@ function LoginMenu() {
                 id="password"
                 name="password"
                 label="Password"
-                placeholder="Enter Password"               
+                placeholder="Enter Password"
                 onChange={handleChange}
                 sx={{ mt: 1, mb: 1 }}
                 InputProps={{

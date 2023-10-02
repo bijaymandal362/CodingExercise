@@ -19,7 +19,11 @@ function AddDialog({ open, onClose, onAdd }) {
     presenterName: "",
     durationInMinutes: "",
   };
-  const [formData, setFormData] = useState({
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [formTouched, setFormTouched] = useState(false);
+
+  const [errors, setErrors] = useState({
     title: "",
     presenterName: "",
     durationInMinutes: "",
@@ -27,25 +31,55 @@ function AddDialog({ open, onClose, onAdd }) {
 
   const clearForm = () => {
     setFormData(initialFormData);
+    setFormTouched(false);
+    setFormTouched(false);
+    setErrors({
+      title: "",
+      presenterName: "",
+      durationInMinutes: "",
+    });
   };
+
   const validateField = (fieldName, value) => {
     let error = "";
+
     if (fieldName === "title") {
-      if (value.trim() === "" || value.length < 2 || value.length > 255) {
-        error = "Title must be between 2 and 255 characters.";
+      if (
+        value.trim() === "" ||
+        value.length < 2 ||
+        value.length > 255 ||
+        /^\s|\s$/.test(value) // Check for leading or trailing white spaces
+      ) {
+        error =
+          "Title must be between 2 and 255 characters and should not have leading/trailing spaces.";
       }
     }
+
     if (fieldName === "presenterName") {
-      if (value.trim() === "" || value.length < 2 || value.length > 50) {
-        error = "Presenter Name must be between 2 and 50 characters.";
+      if (
+        value.trim() === "" ||
+        value.length < 2 ||
+        value.length > 50 ||
+        /^\s|\s$/.test(value) // Check for leading or trailing white spaces
+      ) {
+        error =
+          "Presenter Name must be between 2 and 50 characters and should not have leading/trailing spaces.";
       }
     }
+
     if (fieldName === "durationInMinutes") {
-      const numberValue = parseInt(value, 10);
-      if (isNaN(numberValue) || numberValue < 1 || numberValue > 60) {
-        error = "Duration must be a number between 1 and 60.";
+      if (!value.trim()) {
+        error = "Duration is required.";
+      } else if (/^\s|\s$/.test(value)) {
+        error = "Duration cannot have leading or trailing spaces.";
+      } else {
+        const numberValue = parseInt(value, 10);
+        if (isNaN(numberValue) || numberValue < 1 || numberValue > 60) {
+          error = "Duration must be a number between 1 and 60.";
+        }
       }
     }
+
     return error;
   };
 
@@ -55,6 +89,14 @@ function AddDialog({ open, onClose, onAdd }) {
       ...formData,
       [name]: value,
     });
+
+    // Update the error for the changed field
+    setErrors({
+      ...errors,
+      [name]: validateField(name, value),
+    });
+
+    setFormTouched(true);
   };
 
   const handleAdd = async (e) => {
@@ -77,14 +119,8 @@ function AddDialog({ open, onClose, onAdd }) {
     }
 
     try {
-      // Continue with the API call and submission logic
-      // Get the authentication token from localStorage
       const token = JSON.parse(localStorage.getItem("data"))?.token;
-
-      // Construct the API URL for adding data
       const apiUrl = `${process.env.REACT_APP_API_URL}/api/Presentation/AddPresentation`;
-
-      // Send a POST request with the token and form data
       const response = await axios.post(apiUrl, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -93,20 +129,15 @@ function AddDialog({ open, onClose, onAdd }) {
       });
 
       if (response.status === 200) {
-        // The data was added successfully
-        // Call the "onAdd" callback to update the table data
         onAdd(formData);
-        // Close the dialog
         setFormData(initialFormData);
         clearForm();
         onClose();
       } else {
         console.error("Error adding presentation:", response.statusText);
-        // Handle the error (e.g., show an error message)
       }
     } catch (error) {
       console.error("Error adding presentation:", error);
-      // Handle the error (e.g., show an error message)
     }
   };
 
@@ -122,8 +153,8 @@ function AddDialog({ open, onClose, onAdd }) {
           name="title"
           value={formData.title}
           onChange={handleFieldChange}
-          error={!!validateField("title", formData.title)}
-          helperText={validateField("title", formData.title)}
+          error={formTouched && !!errors.title}
+          helperText={formTouched && errors.title}
           style={{ ...responsiveTextField, marginTop: "16px" }}
         />
         <TextField
@@ -134,8 +165,8 @@ function AddDialog({ open, onClose, onAdd }) {
           name="presenterName"
           value={formData.presenterName}
           onChange={handleFieldChange}
-          error={!!validateField("presenterName", formData.presenterName)}
-          helperText={validateField("presenterName", formData.presenterName)}
+          error={formTouched && !!errors.presenterName}
+          helperText={formTouched && errors.presenterName}
           style={{ ...responsiveTextField, marginTop: "10px" }}
         />
         <TextField
@@ -146,13 +177,8 @@ function AddDialog({ open, onClose, onAdd }) {
           name="durationInMinutes"
           value={formData.durationInMinutes}
           onChange={handleFieldChange}
-          error={
-            !!validateField("durationInMinutes", formData.durationInMinutes)
-          }
-          helperText={validateField(
-            "durationInMinutes",
-            formData.durationInMinutes
-          )}
+          error={formTouched && !!errors.durationInMinutes}
+          helperText={formTouched && errors.durationInMinutes}
           style={{ ...responsiveTextField }}
         />
       </DialogContent>
@@ -160,7 +186,7 @@ function AddDialog({ open, onClose, onAdd }) {
         <Button
           onClick={() => {
             onClose();
-            setFormData(initialFormData);
+            clearForm();
           }}
         >
           Cancel

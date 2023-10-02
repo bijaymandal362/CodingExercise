@@ -10,10 +10,8 @@ import {
 import axios from "axios";
 
 export default function EditDialog({ open, onClose, rowData, onEdit }) {
-  const durationError = "Duration must be a number between 1 and 60";
   const [editedData, setEditedData] = useState({ ...rowData });
   const [isSaving, setIsSaving] = useState(false); // Track whether the save operation is in progress
-
   const [formErrors, setFormErrors] = useState({
     title: "",
     presenterName: "",
@@ -31,18 +29,31 @@ export default function EditDialog({ open, onClose, rowData, onEdit }) {
     if (name === "title") {
       if (!value.trim()) {
         error = "Title is required.";
-      } else if (value.trim().length < 2 || value.trim().length > 255) {
-        error = "Title must be between 2 and 255 characters.";
+      } else if (
+        value.trim().length < 2 ||
+        value.trim().length > 255 ||
+        /^\s|\s$/.test(value) // Check for leading or trailing white spaces
+      ) {
+        error =
+          "Title must be between 2 and 255 characters and should not have leading/trailing spaces.";
       }
     } else if (name === "presenterName") {
       if (!value.trim()) {
         error = "Presenter is required.";
-      } else if (value.trim().length < 2 || value.trim().length > 50) {
-        error = "Presenter Name must be between 2 and 50 characters.";
+      } else if (
+        value.trim().length < 2 ||
+        value.trim().length > 50 ||
+        /^\s|\s$/.test(value) // Check for leading or trailing white spaces
+      ) {
+        error =
+          "Presenter Name must be between 2 and 50 characters and should not have leading/trailing spaces.";
       }
-    } else if (name === "durationInMinutes") {
+    }
+    if (name === "durationInMinutes") {
       if (!value.trim()) {
         error = "Duration is required.";
+      } else if (/^\s|\s$/.test(value)) {
+        error = "Duration cannot have leading or trailing spaces.";
       } else {
         const duration = parseInt(value, 10);
         if (isNaN(duration) || duration < 1 || duration > 60) {
@@ -68,21 +79,18 @@ export default function EditDialog({ open, onClose, rowData, onEdit }) {
 
   const handleSave = async () => {
     try {
-      setIsSaving(true); // Set saving state to true
+      setIsSaving(true);
       const hasErrors = Object.values(formErrors).some((error) => error);
       if (hasErrors) {
         alert("Please correct the errors in the form before submitting.");
-        return; // Exit the function, preventing form submission
+        return;
       }
 
       const apiUrl = `${process.env.REACT_APP_API_URL}/api/Presentation/UpdatePresentation/`;
-
       const token = JSON.parse(localStorage.getItem("data"))?.token;
-
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-
       const response = await axios.put(apiUrl, editedData, {
         headers: headers,
       });
@@ -92,16 +100,13 @@ export default function EditDialog({ open, onClose, rowData, onEdit }) {
         onClose();
       } else {
         console.error("Error updating presentation:", response.statusText);
-        // Handle the error (e.g., show an error message)
       }
     } catch (error) {
       console.error("Error updating presentation:", error);
-      // Handle the error (e.g., show an error message)
     } finally {
-      setIsSaving(false); // Set saving state back to false
+      setIsSaving(false);
     }
   };
-
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="sm">
@@ -118,7 +123,7 @@ export default function EditDialog({ open, onClose, rowData, onEdit }) {
           disabled={isSaving}
           error={formErrors.title !== ""}
           helperText={formErrors.title}
-          style={{ marginBottom: "16px" }}
+          style={{ marginTop: "16px" }}
         />
         <TextField
           label="Presenter"
@@ -131,10 +136,10 @@ export default function EditDialog({ open, onClose, rowData, onEdit }) {
           disabled={isSaving}
           error={formErrors.presenterName !== ""}
           helperText={formErrors.presenterName}
-          style={{ marginBottom: "16px" }}
+          style={{ marginTop: "16px" }}
         />
         <TextField
-          label="Duration"
+          label="Duration in Minutes"
           variant="outlined"
           fullWidth
           required
@@ -148,8 +153,8 @@ export default function EditDialog({ open, onClose, rowData, onEdit }) {
             editedData.durationInMinutes < 1 ||
             editedData.durationInMinutes > 60
           }
-          helperText={formErrors.durationInMinutes || durationError}
-          style={{ marginBottom: "16px" }}
+          helperText={formErrors.durationInMinutes}
+          style={{ marginTop: "16px" }}
         />
       </DialogContent>
       <DialogActions>

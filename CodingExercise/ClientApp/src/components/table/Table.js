@@ -13,6 +13,7 @@ const containerStyle = {
   flexDirection: "column",
   alignItems: "center",
   marginTop: "100px",
+  width: "100%",
 };
 
 const dataGridContainerStyle = {
@@ -33,6 +34,7 @@ const noRowsOverlayStyle = {
   position: "relative",
   marginTop: "20px",
   minHeight: "200px",
+  width: "100%",
 };
 
 const noRowsMessageStyle = {
@@ -47,11 +49,12 @@ const noRowsMessageStyle = {
 
 // CSS class for the normal container (for larger screens)
 const normalContainer = {
-  width: "40%", // Adjust the width as needed
+  width: "45%", // Adjust the width as needed
   margin: "0 auto", // Center the container horizontally
 };
 
 function Table() {
+  const isAdmin = JSON.parse(localStorage.getItem("data"))?.role === "Admin";
   const [rows, setRows] = useState([]);
   const [tableData, setTableData] = useState([]); // Store a copy of the original data
   const [selectedRow, setSelectedRow] = useState(null);
@@ -61,8 +64,6 @@ function Table() {
     pageSize: 25,
     page: 0,
   });
-
-  const isAdmin = JSON.parse(localStorage.getItem("data"))?.role === "Admin";
 
   const fetchPresentationData = () => {
     axios
@@ -116,7 +117,6 @@ function Table() {
   };
 
   const handleDeleteClick = (id) => {
-    // Retrieve the JWT token from localStorage
     const token = JSON.parse(localStorage.getItem("data"))?.token;
 
     // Set the authorization headers with the token
@@ -124,36 +124,29 @@ function Table() {
       Authorization: `Bearer ${token}`,
     };
 
-    // Construct the API URL with the ID
     const apiUrl = `${process.env.REACT_APP_API_URL}/api/Presentation/DeletePresentation/${id}`;
-
-    // Send a DELETE request to delete the resource
     axios
       .delete(apiUrl, {
         headers: headers,
       })
       .then((response) => {
         if (response.status === 200) {
-          // The delete was successful, you can update your data or handle as needed
           console.log(`Deleted presentation with ID: ${id}`);
-          fetchPresentationData(); // Refresh the data after deletion
+          fetchPresentationData();
         } else {
           console.error("Error deleting presentation:", response.statusText);
-          // Handle the error (e.g., show an error message)
         }
       })
       .catch((error) => {
         console.error("Error deleting presentation:", error);
-        // Handle the error (e.g., show an error message)
       });
-    console.log(`Delete clicked for ID: ${id}`);
   };
 
   let columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "title", headerName: "Title", width: 200 },
     { field: "presenterName", headerName: "Presentation", width: 200 },
-    { field: "durationInMinutes", headerName: "Duration", width: 130 },
+    { field: "durationInMinutes", headerName: "Duration(Minutes)", width: 200 },
     {
       field: "actions",
       headerName: "Actions",
@@ -243,13 +236,15 @@ function Table() {
                 </div>
               ),
               NoResultsOverlay: () => (
-                <Stack
-                  alignItems="center"
-                  justifyContent="center"
-                  style={noRowsMessageStyle}
-                >
-                  Local filter returns no result
-                </Stack>
+                <div style={noRowsOverlayStyle}>
+                  <Stack
+                    alignItems="center"
+                    justifyContent="center"
+                    style={noRowsMessageStyle}
+                  >
+                    No rows in DataGrid
+                  </Stack>
+                </div>
               ),
             }}
             slotProps={{

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   FormControl,
-  FormLabel,
   TextField,
   Button,
   Select,
@@ -34,7 +33,10 @@ const inputStyle = {
   required: true,
 };
 
+//Function component
 function Registration() {
+  let navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     userName: "",
@@ -42,7 +44,6 @@ function Registration() {
     role: "Admin", // Default role
   });
 
-  let navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessages, setErrorMessages] = useState({
     name: "",
@@ -76,7 +77,6 @@ function Registration() {
     } else {
       newErrorMessages.password = ""; // Clear the password error message
     }
-
     setErrorMessages(newErrorMessages);
     return isValid;
   };
@@ -85,15 +85,13 @@ function Registration() {
     e.preventDefault();
 
     if (validateForm()) {
-      // All fields are valid, make the API request
       axios
         .post(`${process.env.REACT_APP_API_URL}/Register`, formData)
         .then((response) => {
           console.log("Registration successful:", response.data.message);
-          navigate("/");
+          navigate("/login");
         })
         .catch((error) => {
-          // Handle registration error
           console.error("Error registering:", error);
         });
     }
@@ -113,7 +111,7 @@ function Registration() {
     <Container component="main" maxWidth="sm">
       <CssBaseline />
       <Box sx={containerStyle}>
-        <Typography component="h1" variant="h5">
+        <Typography style={{ marginTop: "16px" }} component="h1" variant="h5">
           Registration
         </Typography>
         <form onSubmit={handleSubmit}>
@@ -123,7 +121,6 @@ function Registration() {
             </Typography>
           )}
           <FormControl {...formControlStyle}>
-            <FormLabel>Enter Name</FormLabel>
             <TextField
               fullWidth
               required
@@ -136,6 +133,7 @@ function Registration() {
               {...inputStyle}
               autoComplete="name"
               error={!!errorMessages.name}
+              style={{ marginTop: "16px" }}
             />
           </FormControl>
           {errorMessages.userName && (
@@ -144,7 +142,6 @@ function Registration() {
             </Typography>
           )}
           <FormControl {...formControlStyle}>
-            <FormLabel>Enter Username</FormLabel>
             <TextField
               fullWidth
               required
@@ -157,6 +154,7 @@ function Registration() {
               {...inputStyle}
               autoComplete="username"
               error={!!errorMessages.userName}
+              style={{ marginTop: "16px" }}
             />
           </FormControl>
           {errorMessages.password && (
@@ -165,7 +163,6 @@ function Registration() {
             </Typography>
           )}
           <FormControl {...formControlStyle}>
-            <FormLabel>Enter Password</FormLabel>
             <TextField
               fullWidth
               required
@@ -173,6 +170,7 @@ function Registration() {
               type={showPassword ? "text" : "password"}
               id="password"
               name="password"
+              style={{ marginTop: "16px" }}
               value={formData.password}
               onChange={handleInputChange}
               {...inputStyle}
@@ -194,13 +192,13 @@ function Registration() {
             />
           </FormControl>
           <FormControl {...formControlStyle}>
-            <FormLabel>Select Role</FormLabel>
             <Select
               label="Role"
               id="role"
               name="role"
               value={formData.role}
               onChange={handleInputChange}
+              style={{ marginTop: "16px" }}
             >
               <MenuItem value="Admin">Admin</MenuItem>
               <MenuItem value="User">User</MenuItem>
